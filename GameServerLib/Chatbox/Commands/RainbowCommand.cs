@@ -58,22 +58,18 @@ namespace LeagueSandbox.GameServer.Chatbox.Commands
                 var rainbow = new byte[4];
                 new Random().NextBytes(rainbow);
                 Thread.Sleep(_delay);
-                BroadcastTint(_me.Team, false, 0.0f, 0, 0, 0, 1f);
+                BroadcastTint(_me.Team, false, 0.0f, 0, 0, 0, 0);
                 BroadcastTint(_me.Team, true, _speed, rainbow[1], rainbow[2], rainbow[3], _a);
             }
 
             Thread.Sleep(_delay);
-            BroadcastTint(_me.Team, false, 0.0f, 0, 0, 0, 1f);
+            BroadcastTint(_me.Team, false, 0.0f, 0, 0, 0, 0);
         }
 
         public void BroadcastTint(TeamId team, bool enable, float speed, byte r, byte g, byte b, float a)
         {
-            Color color = new Color();
-            color.R = r;
-            color.G = g;
-            color.B = b;
-            color.A = (byte) (uint)(a*255.0f);
-            Game.PacketNotifier.NotifyTint(team, enable, speed, color);
+            byte alpha = (byte)(uint)(a * 255.0f); ;
+            Game.PacketNotifier.NotifyTeamTint(team, enable,speed, r,g,b, alpha);
         }
     }
 }

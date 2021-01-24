@@ -293,6 +293,7 @@ namespace GameServerCore.Packets.Interfaces
         /// <param name="userId">User to send the packet to.</param>
         /// <param name="time">Time since the game started (in milliseconds).</param>
         void NotifyGameTimerUpdate(int userId, float time);
+
         /// <summary>
         /// Sends a packet to the specified player detailing that (usually) their hero has spawned.
         /// </summary>
@@ -698,13 +699,16 @@ namespace GameServerCore.Packets.Interfaces
         /// TODO: Take into account any movements (waypoints) that should carry over after the teleport.
         void NotifyTeleport(IGameObject o, Vector2 pos);
         /// <summary>
-        /// Sends a packet to all players detailing that their screen's tint is shifting to the specified color.
+        /// Sends a packet to all players in the same team detailing that their screen's tint is shifting to the specified color.
         /// </summary>
         /// <param name="team">TeamID to apply the tint to.</param>
         /// <param name="enable">Whether or not to fade in the tint.</param>
         /// <param name="speed">Amount of time that should pass before tint is fully applied.</param>
-        /// <param name="color">Color of the tint.</param>
-        void NotifyTint(TeamId team, bool enable, float speed, Color color);
+        /// <param name="r">Red Color of the tint RGBA.</param>
+        /// <param name="g">Green Color of the tint RGBA.</param>
+        /// <param name="b">Blue Color of the tint RGBA.</param>
+        /// <param name="a">Alpha Color of the tint RGBA.</param>
+        void NotifyTeamTint(TeamId team, bool enable, float speed, byte r, byte g, byte b, byte a);
         /// <summary>
         /// Sends a packet to the specified player detailing that the specified LaneTurret has spawned.
         /// </summary>
@@ -760,5 +764,26 @@ namespace GameServerCore.Packets.Interfaces
         /// <param name="request">ViewRequest housing information about the camera's view.</param>
         /// TODO: Verify if this is the correct implementation.
         void NotifyViewResponse(int userId, ViewRequest request);
+
+        /// <summary>
+        /// Sends a packet to the specified player detailing that their screen's tint is shifting to the specified color.
+        /// </summary>
+        /// <param name="team">TeamID to apply the tint to.</param>
+        /// <param name="enable">Whether or not to fade in the tint.</param>
+        /// <param name="speed">Amount of time that should pass before tint is fully applied.</param>
+        /// <param name="r">Red Color of the tint RGBA.</param>
+        /// <param name="g">Green Color of the tint RGBA.</param>
+        /// <param name="b">Blue Color of the tint RGBA.</param>
+        /// <param name="a">Alpha Color of the tint RGBA.</param>
+
+        void NotifyTint(int userId, TeamId team, bool enable, float speed, byte r, byte g, byte b, byte a);
+
+        /// <summary>
+        /// Sends a packet to all players detailing model transparency change
+        /// </summary>
+        /// <param name="u">Unit who's stats have been updated.</param>
+        /// <param name="transparency">New unit transparency value (0-1).</param>
+        /// <param name="transitionTime">Time that takes to change player transparency.</param>
+        void NotifyChangeTransparency(IAttackableUnit u, float transparency, float transitionTime);
     }
 }

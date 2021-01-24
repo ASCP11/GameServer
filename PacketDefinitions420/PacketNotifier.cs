@@ -2181,30 +2181,37 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
-        /// Sends a packet to all players detailing that their screen's tint is shifting to the specified color.
+        /// Sends a packet to all players in the same team detailing that their screen's tint is shifting to the specified color.
         /// </summary>
         /// <param name="team">TeamID to apply the tint to.</param>
         /// <param name="enable">Whether or not to fade in the tint.</param>
         /// <param name="speed">Amount of time that should pass before tint is fully applied.</param>
-        /// <param name="color">Color of the tint.</param>
-        public void NotifyTint(TeamId team, bool enable, float speed, GameServerCore.Content.Color color)
+        /// <param name="r">Red Color of the tint RGBA.</param>
+        /// <param name="g">Green Color of the tint RGBA.</param>
+        /// <param name="b">Blue Color of the tint RGBA.</param>
+        /// <param name="a">Alpha Color of the tint RGBA.</param>
+        public void NotifyTeamTint(TeamId team, bool enable, float speed, byte r, byte g, byte b, byte a)
         {
-            var c = new LeaguePackets.Game.Common.Color
-            {
-                Blue = color.B,
-                Green = color.G,
-                Red = color.R,
-                Alpha = color.A
-            };
-            var tint = new S2C_ColorRemapFX
-            {
-                IsFadingIn = enable,
-                FadeTime = speed,
-                TeamID = (uint)team,
-                Color = c,
-                MaxWeight = (c.Alpha / 255.0f) // TODO: Implement this correctly, current implementation taken from old LS packet
-            };
-            _packetHandlerManager.BroadcastPacket(tint.GetBytes(), Channel.CHL_S2C);
+            var tint = new SetScreenTint(team, enable, speed, r,g,b,a);
+            _packetHandlerManager.BroadcastPacket(tint, Channel.CHL_S2C);
+        }
+
+        /// <summary>
+        /// Sends a packet to the specified player detailing that their screen's tint is shifting to the specified color.
+        /// </summary>
+        /// <param name="team">TeamID to apply the tint to.</param>
+        /// <param name="enable">Whether or not to fade in the tint.</param>
+        /// <param name="speed">Amount of time that should pass before tint is fully applied.</param>
+        /// <param name="r">Red Color of the tint RGBA.</param>
+        /// <param name="g">Green Color of the tint RGBA.</param>
+        /// <param name="b">Blue Color of the tint RGBA.</param>
+        /// <param name="a">Alpha Color of the tint RGBA.</param>
+        public void NotifyTint(int userId, TeamId team, bool enable, float speed, byte r, byte g, byte b, byte a)
+        {
+
+            var tint = new SetScreenTint(team, enable, speed, r,g,b,a);
+
+            _packetHandlerManager.SendPacket(userId, tint, Channel.CHL_S2C);
         }
 
         /// <summary>
@@ -2329,5 +2336,20 @@ namespace PacketDefinitions420
 
             _packetHandlerManager.SendPacket(userId, answer, Channel.CHL_S2C, PacketFlags.None);
         }
+
+        /// <summary>
+        /// Sends a packet to all players detailing model transparency change
+        /// </summary>
+        /// <param name="u">Unit who's stats have been updated.</param>
+        /// <param name="transparency">New unit transparency value (0-1).</param>
+        /// <param name="transitionTime">Time that takes to change player transparency.</param>
+
+        public void NotifyChangeTransparency(IAttackableUnit u, float transparency, float transitionTime)
+        {
+            var transparencyPacket = new SetModelTransparency(u, transparency, transitionTime);
+
+            _packetHandlerManager.BroadcastPacket(transparencyPacket, Channel.CHL_S2C);
+        }
+
     }
 }
