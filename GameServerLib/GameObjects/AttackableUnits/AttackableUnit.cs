@@ -33,6 +33,10 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         /// </summary>
         public bool IsDead { get; protected set; }
         /// <summary>
+        /// Whether or not this Unit is invisible.
+        /// </summary>
+        public bool IsInvisible { get; set; }
+        /// <summary>
         /// Whether or not this Unit's model has been changeds this tick. Resets to False when the next tick update happens in ObjectManager.
         /// </summary>
         public bool IsModelUpdated { get; set; }
@@ -127,6 +131,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             CurrentWaypoint = new KeyValuePair<int, Vector2>(1, Position);
             CrowdControls = new List<ICrowdControl>();
             IsDashing = false;
+            IsInvisible = false;
             Stats.AttackSpeedMultiplier.BaseValue = 1.0f;
 
             _buffsLock = new object();

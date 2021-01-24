@@ -15,6 +15,10 @@ namespace GameServerCore.Domain.GameObjects
         /// </summary>
         bool IsDead { get; }
         /// <summary>
+        /// Whether or not this Unit is invisible.
+        /// </summary>
+        bool IsInvisible { get; set; }
+        /// <summary>
         /// Whether or not this Unit's model has been changeds this tick. Resets to False when the next tick update happens in ObjectManager.
         /// </summary>
         bool IsModelUpdated { get; set; }

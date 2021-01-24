@@ -435,5 +435,68 @@ namespace LeagueSandbox.GameServer.API
         {
             unit.DashToLocation(endPos, dashSpeed, animation, leapGravity, keepFacingLastDirection);
         }
+
+        public static void SetInvisibility(IAttackableUnit unit, bool invisibleStatus)
+        {
+            if (invisibleStatus == true)
+            {
+                if (unit.IsInvisible == false)
+                {
+                    if (unit is IChampion)
+                    {
+                        byte R = 0;
+                        byte G = 0;
+                        byte B = 200;
+                        byte A = (byte)(uint)(0.10f * 255.0f);
+
+                        int userId = (int)_game.PlayerManager.GetClientInfoByChampion(unit as IChampion).PlayerId;
+                        _game.PacketNotifier.NotifyTint(userId, unit.Team, true, 0.0f, R, G, B, A);
+                    }
+                    _game.PacketNotifier.NotifyChangeTransparency(unit, 0.1f, 0f);
+                    unit.IsInvisible = true;
+                    LogInfo("Set invi to true");
+                }
+            }
+            else
+            {
+                if (unit.IsInvisible == true)
+                {
+                    if (unit is IChampion)
+                    {
+                        byte R = 0;
+                        byte G = 0;
+                        byte B = 0;
+                        byte A = (byte)(uint)(1f * 255.0f);
+
+                        int userId = (int)_game.PlayerManager.GetClientInfoByChampion(unit as IChampion).PlayerId;
+                        _game.PacketNotifier.NotifyTint(userId, unit.Team, false, 0.0f, R, G, B, A);
+                    }
+
+                    unit.IsInvisible = false;
+                    _game.PacketNotifier.NotifyChangeTransparency(unit, 1f, 0f);
+                    LogInfo("Set invi to false;");
+
+
+                    var x = GameServerCore.MovementVector.TargetXToNormalFormat(_game.Map.NavigationGrid, unit.Position.X);
+                    var y = GameServerCore.MovementVector.TargetYToNormalFormat(_game.Map.NavigationGrid, unit.Position.Y);
+                    _game.PacketNotifier.NotifyTeleport(unit as IGameObject, new Vector2(x, y) );
+
+                   
+                    if (unit.Waypoints.Count <= 1)//Only tested with champions, although it should work anything(hopefully)
+                    {
+                        //if unit dont move or complete his move before changing invisibility status
+                        unit.SetWaypoints(new List<Vector2> { unit.Position }, true);
+                    }
+                    else
+                    {
+                        //if unit is moving when invisibility status is changed
+                        var desiredPos = unit.Waypoints[1];
+                        unit.SetWaypoints(new List<Vector2> { unit.Position, desiredPos }, true);
+                    }
+
+                }
+            }
+        }
+
     }
 }

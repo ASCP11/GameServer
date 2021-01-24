@@ -269,6 +269,15 @@ namespace LeagueSandbox.GameServer
                 return true;
             }
 
+            var attackableUnit = o as IAttackableUnit;
+            if(attackableUnit != null)
+            {
+                if (attackableUnit.IsInvisible == true)
+                {
+                    return false;
+                }
+            }
+
             lock (_objectsLock)
             {
                 foreach (var kv in _objects)
